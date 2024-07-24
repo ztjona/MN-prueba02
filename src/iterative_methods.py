@@ -54,12 +54,13 @@ def gauss_jacobi(
     assert b.shape[0] == A.shape[0], "El vector b debe ser de tamaño n."
 
     if not isinstance(x0, np.ndarray):
-        x0 = np.array(x0, dtype=float)
+        x0 = np.array(x0, dtype=float, ndmin=2).T
     assert x0.shape[0] == A.shape[0], "El vector x0 debe ser de tamaño n."
 
     # --- Algoritmo ---
     n = A.shape[0]
     x = x0.copy()
+    tray = [x.copy()]
     logging.info(f"i= {0} x: {x.T}")
     for k in range(1, max_iter):
         x_new = np.zeros((n, 1))  # prealloc
@@ -68,12 +69,13 @@ def gauss_jacobi(
             x_new[i] = (b[i] - suma) / A[i, i]
 
         if np.linalg.norm(x_new - x) < tol:
-            return x_new
+            return x_new, tray
 
         x = x_new.copy()
+        tray.append(x.copy())
         logging.info(f"i= {k} x: {x.T}")
 
-    return x
+    return x, tray
 
 
 # ####################################################################
@@ -104,12 +106,13 @@ def gauss_seidel(
     assert b.shape[0] == A.shape[0], "El vector b debe ser de tamaño n."
 
     if not isinstance(x0, np.ndarray):
-        x0 = np.array(x0, dtype=float)
+        x0 = np.array(x0, dtype=float, ndmin=2).T
     assert x0.shape[0] == A.shape[0], "El vector x0 debe ser de tamaño n."
 
     # --- Algoritmo ---
     n = A.shape[0]
     x = x0.copy()
+    tray = [x.copy()]
 
     logging.info(f"i= {0} x: {x.T}")
     for k in range(1, max_iter):
@@ -121,9 +124,10 @@ def gauss_seidel(
             x_new[i] = (b[i] - suma) / A[i, i]
 
         if np.linalg.norm(x_new - x) < tol:
-            return x_new
+            return x_new, tray
 
         x = x_new.copy()
+        tray.append(x.copy())
         logging.info(f"i= {k} x: {x.T}")
 
-    return x
+    return x, tray
